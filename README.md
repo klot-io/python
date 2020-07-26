@@ -1,2 +1,2 @@
-# python
-A general Python image
+# sqlalchemy
+A general SQLAchemy image
