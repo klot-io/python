@@ -112,7 +112,7 @@ RUN set -ex \
 	pip --version; \
 	rm -f get-pip.py \
 # install needed packages
-    && pip install --no-cache-dir requirements.txt \
+    && pip install --no-cache-dir -r requirements.txt \
 	&& apk del --no-network .build-deps \
 # clean up files
 	&& find /usr/local -depth \
