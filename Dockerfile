@@ -9,7 +9,12 @@ ENV LANG C.UTF-8
 
 # install ca-certificates so that HTTPS works consistently
 # other runtime dependencies for Python are installed later
-RUN apk add --no-cache ca-certificates
+# also prepare for requirements
+RUN apk add --no-cache ca-certificates && mkdir -p /opt/service
+
+WORKDIR /opt/service
+
+COPY requirements.txt .
 
 ENV GPG_KEY E3FF2839C048B25C084DEBE9B26995E310250568
 ENV PYTHON_VERSION 3.8.5
@@ -107,12 +112,7 @@ RUN set -ex \
 	pip --version; \
 	rm -f get-pip.py \
 # install needed packages
-    && pip install --no-cache-dir \
-        PyYAML==5.3.1 \
-        requests==2.24.0 \
-        redis==3.5.2 \
-        coverage==5.2.1 \
-        ptvsd==4.3.2 \
+    && pip install --no-cache-dir requirements.txt \
 	&& apk del --no-network .build-deps \
 # clean up files
 	&& find /usr/local -depth \
