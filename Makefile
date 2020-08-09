@@ -7,7 +7,7 @@ VOLUMES=-v ${PWD}/lib:/opt/service/lib \
 		-v ${PWD}/setup.py:/opt/service/setup.py
 ENVIRONMENT=-e PYTHONDONTWRITEBYTECODE=1 \
 			-e PYTHONUNBUFFERED=1
-.PHONY: cross build shell debug test push tag untag
+.PHONY: cross build shell debug test push setup tag untag
 
 cross:
 	docker run --rm --privileged multiarch/qemu-user-static:register --reset
