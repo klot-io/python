@@ -18,3 +18,7 @@ RUN apk add --no-cache --virtual .pip-deps  \
 			-o \
 			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
 		\) -exec rm -rf '{}' +
+
+COPY lib lib
+
+ENV PYTHONPATH "/opt/service/lib:${PYTHONPATH}"
