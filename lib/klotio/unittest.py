@@ -1,12 +1,34 @@
 import unittest
 
+class MockRedis(object):
+
+    def __init__(self, host, port):
+
+        self.host = host
+        self.port = port
+        self.channel = None
+
+        self.messages = []
+
+    def __str__(self):
+
+        return f"MockRedis<host={self.host},port={self.port}>"
+
+    def publish(self, channel, message):
+
+        self.channel = channel
+        self.messages.append(message)
+
+
 class MockLogger(object):
 
-    def __init__(self):
+    def __init__(self, name):
 
+        self.name = name
         self.events = []
 
-    def log(self, level, message, extra=None):
+    @staticmethod
+    def event(level, message, extra=None):
 
         event = {
             "level": level,
@@ -16,7 +38,11 @@ class MockLogger(object):
         if extra:
             event.update(extra)
 
-        self.events.append(event)
+        return event
+
+    def log(self, level, message, extra=None):
+
+        self.events.append(self.event(level, message, extra))
 
     def exception(self, message, extra=None):
         self.log("exception", message, extra)
@@ -37,25 +63,17 @@ class MockLogger(object):
         self.log("debug", message, extra)
 
 
-class MockRedis(object):
-
-    def __init__(self, host, port):
-
-        self.host = host
-        self.port = port
-        self.channel = None
-
-        self.messages = []
-
-    def publish(self, channel, message):
-
-        self.channel = channel
-        self.messages.append(message)
-
-
 class TestCase(unittest.TestCase):
 
     maxDiff = None
+
+    def assertLogged(self, logger, level, message, extra=None):
+
+        self.assertIn(MockLogger.event(level, message, extra), logger.events)
+
+    def assertNotLogged(self, logger, level, message, extra=None):
+
+        self.assertNotIn(MockLogger.event(level, message, extra), logger.events)
 
     def assertFields(self, fields, data):
 

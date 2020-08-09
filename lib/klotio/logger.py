@@ -8,7 +8,7 @@ def setup(name):
 
     logHandler = logging.StreamHandler()
     logHandler.setFormatter(pythonjsonlogger.jsonlogger.JsonFormatter(
-        fmt="%(created)f %(asctime)s %(name)s %(levelname)s %(message)s",
+        fmt="%(created)f %(asctime)s %(name)s %(levelname)s %(pathname)s %(funcName)s %(lineno)d %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S %Z"
     ))
 

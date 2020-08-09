@@ -1,23 +1,71 @@
 import unittest
 import unittest.mock
-
 import klotio.unittest
+
+import redis
+import klotio.logger
+
+
+class TestMockRedis(unittest.TestCase):
+
+    @unittest.mock.patch("redis.Redis", klotio.unittest.MockRedis)
+    def setUp(self):
+
+        self.redis = redis.Redis(host="unit", port=123)
+
+    @unittest.mock.patch("redis.Redis", klotio.unittest.MockRedis)
+    def test___init__(self):
+
+        db = redis.Redis(host="test", port=456)
+
+        self.assertEqual(db.host, "test")
+        self.assertEqual(db.port, 456)
+        self.assertIsNone(db.channel)
+        self.assertEqual(db.messages, [])
+
+    @unittest.mock.patch("redis.Redis", klotio.unittest.MockRedis)
+    def test___str__(self):
+
+        db = redis.Redis(host="cheese", port=789)
+
+        self.assertEqual(str(db), "MockRedis<host=cheese,port=789>")
+
+    def test_publish(self):
+
+        self.redis.publish("unit-test", "test-unit")
+
+        self.assertEqual(self.redis.channel, "unit-test")
+        self.assertEqual(self.redis.messages, ["test-unit"])
+
 
 class TestMockLogger(unittest.TestCase):
 
+    @unittest.mock.patch("klotio.logger.setup", klotio.unittest.MockLogger)
+    def setUp(self):
+
+        self.logger = klotio.logger.setup("unit")
+
+    @unittest.mock.patch("klotio.logger.setup", klotio.unittest.MockLogger)
     def test___init__(self):
 
-        logger = klotio.unittest.MockLogger()
+        logger = klotio.logger.setup("test")
 
+        self.assertEqual(logger.name, "test")
         self.assertEqual(logger.events, [])
+
+    def test_event(self):
+
+        self.assertEqual(klotio.unittest.MockLogger.event("unit", "test", extra={"a": 1}), {
+            "level": "unit",
+            "message": "test",
+            "a": 1
+        })
 
     def test_log(self):
 
-        logger = klotio.unittest.MockLogger()
+        self.logger.log("unit", "test", extra={"a": 1})
 
-        logger.log("unit", "test", extra={"a": 1})
-
-        self.assertEqual(logger.events, [{
+        self.assertEqual(self.logger.events, [{
             "level": "unit",
             "message": "test",
             "a": 1
@@ -25,11 +73,9 @@ class TestMockLogger(unittest.TestCase):
 
     def test_exception(self):
 
-        logger = klotio.unittest.MockLogger()
+        self.logger.exception("test", extra={"a": 1})
 
-        logger.exception("test", extra={"a": 1})
-
-        self.assertEqual(logger.events, [{
+        self.assertEqual(self.logger.events, [{
             "level": "exception",
             "message": "test",
             "a": 1
@@ -37,11 +83,9 @@ class TestMockLogger(unittest.TestCase):
 
     def test_critical(self):
 
-        logger = klotio.unittest.MockLogger()
+        self.logger.critical("test", extra={"a": 1})
 
-        logger.critical("test", extra={"a": 1})
-
-        self.assertEqual(logger.events, [{
+        self.assertEqual(self.logger.events, [{
             "level": "critical",
             "message": "test",
             "a": 1
@@ -49,11 +93,9 @@ class TestMockLogger(unittest.TestCase):
 
     def test_error(self):
 
-        logger = klotio.unittest.MockLogger()
+        self.logger.error("test", extra={"a": 1})
 
-        logger.error("test", extra={"a": 1})
-
-        self.assertEqual(logger.events, [{
+        self.assertEqual(self.logger.events, [{
             "level": "error",
             "message": "test",
             "a": 1
@@ -61,11 +103,9 @@ class TestMockLogger(unittest.TestCase):
 
     def test_warning(self):
 
-        logger = klotio.unittest.MockLogger()
+        self.logger.warning("test", extra={"a": 1})
 
-        logger.warning("test", extra={"a": 1})
-
-        self.assertEqual(logger.events, [{
+        self.assertEqual(self.logger.events, [{
             "level": "warning",
             "message": "test",
             "a": 1
@@ -73,11 +113,9 @@ class TestMockLogger(unittest.TestCase):
 
     def test_info(self):
 
-        logger = klotio.unittest.MockLogger()
+        self.logger.info("test", extra={"a": 1})
 
-        logger.info("test", extra={"a": 1})
-
-        self.assertEqual(logger.events, [{
+        self.assertEqual(self.logger.events, [{
             "level": "info",
             "message": "test",
             "a": 1
@@ -85,39 +123,33 @@ class TestMockLogger(unittest.TestCase):
 
     def test_debug(self):
 
-        logger = klotio.unittest.MockLogger()
+        self.logger.debug("test", extra={"a": 1})
 
-        logger.debug("test", extra={"a": 1})
-
-        self.assertEqual(logger.events, [{
+        self.assertEqual(self.logger.events, [{
             "level": "debug",
             "message": "test",
             "a": 1
         }])
 
 
-class TestMockRedis(unittest.TestCase):
-
-    def test___init__(self):
-
-        redis = klotio.unittest.MockRedis("redis.com", 123)
-
-        self.assertEqual(redis.host, "redis.com")
-        self.assertEqual(redis.port, 123)
-        self.assertIsNone(redis.channel)
-        self.assertEqual(redis.messages, [])
-
-    def test_publish(self):
-
-        redis = klotio.unittest.MockRedis("redis.com", 123)
-
-        redis.publish("unit", "test")
-
-        self.assertEqual(redis.channel, "unit")
-        self.assertEqual(redis.messages, ["test"])
-
-
 class TestUnitTest(klotio.unittest.TestCase):
+
+    @unittest.mock.patch("klotio.logger.setup", klotio.unittest.MockLogger)
+    def setUp(self):
+
+        self.logger = klotio.logger.setup("unit")
+
+    def test_assertLogged(self):
+
+        self.logger.info("sure", extra={"a": 1})
+
+        self.assertLogged(self.logger, "info", "sure", extra={"a": 1})
+
+    def test_assertNotLogged(self):
+
+        self.logger.info("sure", extra={"a": 1})
+
+        self.assertNotLogged(self.logger, "info", "sure")
 
     def test_assertFields(self):
 

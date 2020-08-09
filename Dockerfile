@@ -19,6 +19,6 @@ RUN apk add --no-cache --virtual .pip-deps  \
 			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
 		\) -exec rm -rf '{}' +
 
-COPY lib lib
+COPY lib/klotio lib/klotio
 
 ENV PYTHONPATH "/opt/service/lib:${PYTHONPATH}"
