@@ -1,8 +1,10 @@
 import os
+import yaml
 import logging
 import pythonjsonlogger.jsonlogger
 
-def setup(name):
+
+def logger(name):
 
     level = getattr(logging, os.environ.get("LOG_LEVEL", "WARNING"))
 
@@ -21,3 +23,9 @@ def setup(name):
     custom.setLevel(level)
 
     return custom
+
+
+def settings():
+
+    with open("/opt/service/config/settings.yaml", "r") as settings_file:
+        return yaml.safe_load(settings_file)

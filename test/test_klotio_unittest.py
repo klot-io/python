@@ -3,7 +3,7 @@ import unittest.mock
 import klotio_unittest
 
 import redis
-import klotio_logger
+import klotio
 
 
 class TestMockRedis(unittest.TestCase):
@@ -40,15 +40,15 @@ class TestMockRedis(unittest.TestCase):
 
 class TestMockLogger(unittest.TestCase):
 
-    @unittest.mock.patch("klotio_logger.setup", klotio_unittest.MockLogger)
+    @unittest.mock.patch("klotio.logger", klotio_unittest.MockLogger)
     def setUp(self):
 
-        self.logger = klotio_logger.setup("unit")
+        self.logger = klotio.logger("unit")
 
-    @unittest.mock.patch("klotio_logger.setup", klotio_unittest.MockLogger)
+    @unittest.mock.patch("klotio.logger", klotio_unittest.MockLogger)
     def test___init__(self):
 
-        logger = klotio_logger.setup("test")
+        logger = klotio.logger("test")
 
         self.assertEqual(logger.name, "test")
         self.assertEqual(logger.events, [])
@@ -134,10 +134,10 @@ class TestMockLogger(unittest.TestCase):
 
 class TestUnitTest(klotio_unittest.TestCase):
 
-    @unittest.mock.patch("klotio_logger.setup", klotio_unittest.MockLogger)
+    @unittest.mock.patch("klotio.logger", klotio_unittest.MockLogger)
     def setUp(self):
 
-        self.logger = klotio_logger.setup("unit")
+        self.logger = klotio.logger("unit")
 
     def test_assertLogged(self):
 
