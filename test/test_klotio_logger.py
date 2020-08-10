@@ -2,13 +2,13 @@ import unittest
 import unittest.mock
 
 import logging
-import klotio.logger
+import klotio_logger
 
 class TestLogger(unittest.TestCase):
 
     def test_setup(self):
 
-        custom = klotio.logger.setup("unit-test")
+        custom = klotio_logger.setup("unit-test")
         self.assertEqual(custom.name, "unit-test")
 
         root = logging.getLogger()
