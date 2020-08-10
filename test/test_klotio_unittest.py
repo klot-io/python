@@ -37,6 +37,22 @@ class TestMockRedis(unittest.TestCase):
         self.assertEqual(self.redis.channel, "unit-test")
         self.assertEqual(self.redis.messages, ["test-unit"])
 
+    def test_pubsub(self):
+
+        self.assertEqual(self.redis.pubsub(), self.redis)
+
+    def test_subscribe(self):
+
+        self.redis.subscribe("stuff")
+
+        self.assertEqual(self.redis.channel, "stuff")
+
+    def test_get_message(self):
+
+        self.redis.messages = ["things"]
+
+        self.assertEqual(self.redis.get_message(), "things")
+
 
 class TestMockLogger(unittest.TestCase):
 

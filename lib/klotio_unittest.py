@@ -19,6 +19,18 @@ class MockRedis(object):
         self.channel = channel
         self.messages.append(message)
 
+    def pubsub(self):
+
+        return self
+
+    def subscribe(self, channel):
+
+        self.channel = channel
+
+    def get_message(self):
+
+        return self.messages.pop(0)
+
 
 class MockLogger(object):
 
