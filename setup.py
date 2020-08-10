@@ -5,7 +5,7 @@ setup(
     name="klotio-python",
     version="0.2",
     package_dir = {'': 'lib'},
-    py_modules = ['klotio_logger', 'klotio_unittest'],
+    py_modules = ['klotio', 'klotio_unittest'],
     install_requires=[
         'python-json-logger==0.1.11',
         'PyYAML==5.3.1',
