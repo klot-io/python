@@ -148,6 +148,18 @@ class TestMockLogger(unittest.TestCase):
         }])
 
 
+class TestMockIntegrations(unittest.TestCase):
+
+    @unittest.mock.patch("klotio.integrations", klotio_unittest.MockIntegrations())
+    def test_integrations(self):
+
+        self.assertEqual(klotio.integrations.forms, {})
+
+        klotio.integrations.add("unit", "test")
+
+        self.assertEqual(klotio.integrations("unit"), ["test"])
+
+
 class TestUnitTest(klotio_unittest.TestCase):
 
     @unittest.mock.patch("klotio.logger", klotio_unittest.MockLogger)

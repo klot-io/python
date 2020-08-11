@@ -52,27 +52,47 @@ class MockLogger(object):
 
         return event
 
-    def log(self, level, message, extra=None):
+    def log(self, level, message, extra=None, **kwargs):
 
         self.events.append(self.event(level, message, extra))
 
-    def exception(self, message, extra=None):
+    def exception(self, message, extra=None, **kwargs):
         self.log("exception", message, extra)
 
-    def critical(self, message, extra=None):
+    def critical(self, message, extra=None, **kwargs):
         self.log("critical", message, extra)
 
-    def error(self, message, extra=None):
+    def error(self, message, extra=None, **kwargs):
         self.log("error", message, extra)
 
-    def warning(self, message, extra=None):
+    def warning(self, message, extra=None, **kwargs):
         self.log("warning", message, extra)
 
-    def info(self, message, extra=None):
+    def info(self, message, extra=None, **kwargs):
         self.log("info", message, extra)
 
-    def debug(self, message, extra=None):
+    def debug(self, message, extra=None, **kwargs):
         self.log("debug", message, extra)
+
+
+class MockIntegrations(object):
+
+    def __init__(self):
+
+        self.forms = {}
+
+    def add(self, form, integrations):
+
+        if not isinstance(integrations, list):
+            integrations = [integrations]
+
+        self.forms.setdefault(form, [])
+
+        self.forms[form].extend(integrations)
+
+    def __call__(self, form):
+
+        return self.forms[form]
 
 
 class TestCase(unittest.TestCase):
