@@ -8,7 +8,7 @@ import pythonjsonlogger.jsonlogger
 
 def logger(name):
 
-    level = getattr(logging, os.environ.get("LOG_LEVEL", "WARNING"))
+    level = os.environ.get("LOG_LEVEL", "WARNING")
 
     logHandler = logging.StreamHandler()
     logHandler.setFormatter(pythonjsonlogger.jsonlogger.JsonFormatter(
