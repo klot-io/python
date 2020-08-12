@@ -18,6 +18,9 @@ pipeline {
             }
         }
         stage('Push') {
+            when {
+                branch 'master'
+            }
             steps {
                 sh 'make push'
             }
