@@ -159,6 +159,7 @@ class TestMockIntegrations(unittest.TestCase):
 
         self.assertEqual(klotio.integrations("unit"), ["test"])
 
+        self.assertEqual(klotio.integrations("nope"), [])
 
 class TestUnitTest(klotio_unittest.TestCase):
 

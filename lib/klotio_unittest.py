@@ -92,7 +92,7 @@ class MockIntegrations(object):
 
     def __call__(self, form):
 
-        return self.forms[form]
+        return self.forms.get(form, [])
 
 
 class TestCase(unittest.TestCase):
