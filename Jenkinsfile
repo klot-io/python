@@ -12,9 +12,9 @@ pipeline {
                 sh 'make test'
             }
         }
-        stage('Setup') {
+        stage('Verify') {
             steps {
-                sh 'make setup'
+                sh 'make verify'
             }
         }
         stage('Push') {
