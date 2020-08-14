@@ -99,13 +99,57 @@ class TestCase(unittest.TestCase):
 
     maxDiff = None
 
+    def consistent(self, first, second):
+
+        if isinstance(first, dict) and isinstance(second, dict):
+
+            for first_key, first_item in first.items():
+                if first_key not in second or not self.consistent(first_item, second[first_key]):
+                    return False
+
+        elif isinstance(first, list) and isinstance(second, list):
+
+            second_index = 0
+
+            for first_item in first:
+
+                found = False
+
+                for second_index, second_item in enumerate(second[second_index:]):
+                    if self.consistent(first_item, second_item):
+                        found = True
+                        break
+
+                if not found:
+                    return False
+
+        else:
+
+            return first == second
+
+        return True
+
+    def contains(self, member, container):
+
+        for item in container:
+            if self.consistent(member, item):
+                return True
+
+        return False
+
+    def assertConsistent(self, first, second, message=None):
+
+        if not self.consistent(first, second):
+            self.assertEqual(first, second, message)
+
+    def assertContains(self, member, container, message=None):
+
+        if not self.contains(member, container):
+            self.assertIn(member, container, message)
+
     def assertLogged(self, logger, level, message, extra=None):
 
-        self.assertIn(MockLogger.event(level, message, extra), logger.events)
-
-    def assertNotLogged(self, logger, level, message, extra=None):
-
-        self.assertNotIn(MockLogger.event(level, message, extra), logger.events)
+        self.assertContains(MockLogger.event(level, message, extra), logger.events)
 
     def assertFields(self, fields, data):
 
@@ -140,14 +184,11 @@ class TestCase(unittest.TestCase):
     def assertStatusModel(self, response, code, key, model):
 
         self.assertEqual(response.status_code, code, response.json)
-
-        for field in model:
-            self.assertEqual(response.json[key][field], model[field], field)
+        self.assertConsistent(model, response.json[key])
 
     def assertStatusModels(self, response, code, key, models):
 
         self.assertEqual(response.status_code, code, response.json)
 
         for index, model in enumerate(models):
-            for field in model:
-                self.assertEqual(response.json[key][index][field], model[field], f"{index} {field}")
+            self.assertConsistent(model, response.json[key][index])
