@@ -37,6 +37,10 @@ class MockLogger(object):
     def __init__(self, name):
 
         self.name = name
+        self.clear()
+
+    def clear(self):
+
         self.events = []
 
     @staticmethod

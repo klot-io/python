@@ -69,6 +69,14 @@ class TestMockLogger(unittest.TestCase):
         self.assertEqual(logger.name, "test")
         self.assertEqual(logger.events, [])
 
+    def test_clear(self):
+
+        self.logger.events = [1, 2, 3]
+
+        self.logger.clear()
+
+        self.assertEqual(self.logger.events, [])
+
     def test_event(self):
 
         self.assertEqual(klotio_unittest.MockLogger.event("unit", "test", extra={"a": 1}), {
