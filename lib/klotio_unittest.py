@@ -2,7 +2,7 @@
 Module for unittesting and mocking general klot-io functionality
 """
 
-#pylint: disable=unused-argument,invalid-name
+#pylint: disable=unused-argument
 
 import unittest
 

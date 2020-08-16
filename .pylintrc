@@ -142,7 +142,8 @@ disable=bad-continuation,
         comprehension-escape,
         broad-except,
         wrong-import-order,
-        redefined-builtin
+        redefined-builtin,
+        invalid-name
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
