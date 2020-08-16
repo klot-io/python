@@ -21,6 +21,8 @@ class TestMockRedis(unittest.TestCase):
         self.assertEqual(db.host, "test")
         self.assertEqual(db.port, 456)
         self.assertIsNone(db.channel)
+        self.assertEqual(db.data, {})
+        self.assertEqual(db.expires, {})
         self.assertEqual(db.messages, [])
 
     @unittest.mock.patch("redis.Redis", klotio_unittest.MockRedis)
@@ -29,6 +31,20 @@ class TestMockRedis(unittest.TestCase):
         db = redis.Redis(host="cheese", port=789)
 
         self.assertEqual(str(db), "MockRedis<host=cheese,port=789>")
+
+    def test_get(self):
+
+        self.redis.data["yep"] = True
+
+        self.assertTrue(self.redis.get("yep"))
+        self.assertIsNone(self.redis.get("nope"))
+
+    def test_set(self):
+
+        self.redis.set("yep", True, ex="wife")
+
+        self.assertEqual(self.redis.data, {"yep": True})
+        self.assertEqual(self.redis.expires, {"yep": "wife"})
 
     def test_publish(self):
 

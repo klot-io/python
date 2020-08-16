@@ -8,11 +8,22 @@ class MockRedis(object):
         self.port = port
         self.channel = None
 
+        self.data = {}
+        self.expires = {}
         self.messages = []
 
     def __str__(self):
 
         return f"MockRedis<host={self.host},port={self.port}>"
+
+    def get(self, key):
+
+        return self.data.get(key)
+
+    def set(self, key, value, ex=None):
+
+        self.data[key] = value
+        self.expires[key] = ex
 
     def publish(self, channel, message):
 
