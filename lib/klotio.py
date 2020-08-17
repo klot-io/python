@@ -1,3 +1,9 @@
+"""
+Module for general klot-io functionality
+"""
+
+# pylint: disable: invalid-name
+
 import os
 import glob
 import yaml
@@ -7,18 +13,21 @@ import pythonjsonlogger.jsonlogger
 
 
 def logger(name):
+    """
+    Creates a logget by name and sets the default logging to be structured
+    """
 
     level = os.environ.get("LOG_LEVEL", "WARNING")
 
-    logHandler = logging.StreamHandler()
-    logHandler.setFormatter(pythonjsonlogger.jsonlogger.JsonFormatter(
+    handler = logging.StreamHandler()
+    handler.setFormatter(pythonjsonlogger.jsonlogger.JsonFormatter(
         fmt="%(created)f %(asctime)s %(name)s %(levelname)s %(pathname)s %(funcName)s %(lineno)d %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S %Z"
     ))
 
     root = logging.getLogger()
     root.handlers = []
-    root.addHandler(logHandler)
+    root.addHandler(handler)
     root.setLevel(level)
 
     custom = logging.getLogger(name)
@@ -28,23 +37,32 @@ def logger(name):
 
 
 def settings():
+    """
+    Loads and returns settings from the default config area
+    """
 
     with open("/opt/service/config/settings.yaml", "r") as settings_file:
         return yaml.safe_load(settings_file)
 
 
-def derive(integrate):
+def derive(derivation):
+    """
+    Derives the integrations to grab with wordplay
+    """
 
-    if "url" in integrate:
-        response = requests.options(integrate["url"])
-    elif "node" in integrate:
-        response = requests.options(f"http://api.klot-io/node", params=integrate["node"])
+    if "url" in derivation:
+        response = requests.options(derivation["url"])
+    elif "node" in derivation:
+        response = requests.options("http://api.klot-io/node", params=derivation["node"])
 
     response.raise_for_status()
 
     return response.json()
 
 def integrate(integration):
+    """
+    Integrates the values for a field including sub fields
+    """
 
     if "integrate" in integration:
         try:
@@ -59,11 +77,14 @@ def integrate(integration):
     return integration
 
 def integrations(form):
+    """
+    Loads the integrations for a form, including looking up the values
+    """
 
-    integrations = []
+    integrated = []
 
     for integration_path in sorted(glob.glob(f"/opt/service/config/integration_*_{form}.fields.yaml")):
         with open(integration_path, "r") as integration_file:
-            integrations.append(integrate({**{"name": integration_path.split("_")[1], **yaml.safe_load(integration_file)}}))
+            integrated.append(integrate({**{"name": integration_path.split("_")[1], **yaml.safe_load(integration_file)}}))
 
-    return integrations
+    return integrated

@@ -1,15 +1,16 @@
 ACCOUNT=klotio
 IMAGE=python
 INSTALL=arm32v7/python:3.8.5-alpine3.12
-VERSION?=0.2
+VERSION?=0.3
 DEBUG_PORT=5678
 TTY=$(shell if tty -s; then echo "-it"; fi)
 VOLUMES=-v ${PWD}/lib:/opt/service/lib \
 		-v ${PWD}/test:/opt/service/test \
+		-v ${PWD}/.pylintrc:/opt/service/.pylintrc \
 		-v ${PWD}/setup.py:/opt/service/setup.py
 ENVIRONMENT=-e PYTHONDONTWRITEBYTECODE=1 \
 			-e PYTHONUNBUFFERED=1
-.PHONY: cross build shell debug test push verify tag untag
+.PHONY: cross build shell debug test lint push verify tag untag
 
 cross:
 	docker run --rm --privileged multiarch/qemu-user-static:register --reset
@@ -25,6 +26,9 @@ debug:
 
 test:
 	docker run $(TTY) $(VOLUMES) $(ENVIRONMENT) $(ACCOUNT)/$(IMAGE):$(VERSION) sh -c "coverage run -m unittest discover -v test && coverage report -m --include 'lib/*.py'"
+
+lint:
+	docker run $(TTY) $(VOLUMES) $(ENVIRONMENT) $(ACCOUNT)/$(IMAGE):$(VERSION) sh -c "pylint --rcfile=.pylintrc lib/"
 
 push:
 	docker push $(ACCOUNT)/$(IMAGE):$(VERSION)

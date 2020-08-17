@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 setup(
     name="klotio-python",
-    version="0.2",
+    version="0.3",
     package_dir = {'': 'lib'},
     py_modules = ['klotio', 'klotio_unittest'],
     install_requires=[
